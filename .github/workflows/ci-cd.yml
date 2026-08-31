@@ -1,4 +1,4 @@
-name: CI/CD - Deploy Website
+name: Deploy Website
 'on':
   push:
     branches:
@@ -8,26 +8,16 @@ permissions:
   pages: write
   id-token: write
 jobs:
-  build:
-    name: Build Website
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source code
+      - name: Checkout Code
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Upload website
+      - name: Upload Website
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy website
-        id: deployment
+      - name: Deploy Website
         uses: actions/deploy-pages@v4
