@@ -1,4 +1,4 @@
-name: Deploy Website
+name: CI/CD - Deploy Website
 'on':
   push:
     branches:
@@ -8,16 +8,36 @@ permissions:
   pages: write
   id-token: write
 jobs:
-  deploy:
+  test:
+    name: Test Website
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Check index.html
+        run: |
+          test -f index.html
+          echo "index.html exists"
+      - name: Check CSS file
+        run: |
+          test -f style.css
+          echo "style.css exists"
+  deploy:
+    name: Deploy Website
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout source code
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Upload Website
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload website
+        uses: actions/upload-pages-artifact@v4
         with:
           path: .
-      - name: Deploy Website
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
